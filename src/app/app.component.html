@@ -5,7 +5,7 @@
   class="content"
   role="main"
   fxLayout="row wrap"
-  gdColumns="repeat(auto-fill, minmax(500px, 1fr))"
+  gdColumns="repeat(auto-fill, minmax(110px, 1fr))"
   gdGap="10px"
   style="padding: 10px;"
 >
@@ -14,43 +14,15 @@
       <mat-card-title>{{ player.type }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <div>
-        K: {{ player.stats.k }} | {{ player.offsets.k.min }} -
-        {{ player.offsets.k.max }}
+      <div *ngFor="let stat of stats">
+        {{ stat | statNames }}:
+        <span *ngIf="player.stats[stat] > 0"
+          >{{ player.offsets[stat].min
+          }}<span *ngIf="player.offsets[stat].max !== player.offsets[stat].min">
+            - {{ player.offsets[stat].max }}</span
+          ></span
+        ><span *ngIf="player.stats[stat] === 0">⁠—</span>
       </div>
-      <div>
-        BB: {{ player.stats.bb }} | {{ player.offsets.bb.min }} -
-        {{ player.offsets.bb.max }}
-      </div>
-      <div>
-        GO: {{ player.stats.go }} | {{ player.offsets.go.min }} -
-        {{ player.offsets.go.max }}
-      </div>
-      <div>
-        1B: {{ player.stats.fb }} | {{ player.offsets.fb.min }} -
-        {{ player.offsets.fb.max }}
-      </div>
-      <div>
-        2B: {{ player.stats.sb }} | {{ player.offsets.sb.min }} -
-        {{ player.offsets.sb.max }}
-      </div>
-      <div>
-        FO: {{ player.stats.fo }} | {{ player.offsets.fo.min }} -
-        {{ player.offsets.fo.max }}
-      </div>
-      <div>
-        HR: {{ player.stats.hr }} |
-        <span *ngIf="player.stats.hr > 0"
-          >{{ player.offsets.hr.min }} - {{ player.offsets.hr.max }}</span
-        >
-      </div>
-      <div>
-        3B: {{ player.stats.tb }} |
-        <span *ngIf="player.stats.tb > 0"
-          >{{ player.offsets.tb.min }} - {{ player.offsets.tb.max }}</span
-        >
-      </div>
-      <div>Total: {{ player.total }}</div>
     </mat-card-content>
   </mat-card>
   <!-- Footer -->
