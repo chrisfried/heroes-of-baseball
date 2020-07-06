@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { GivenNames, LastNames } from '../assets/pre-1930-baseball-names.json';
+import { Bios } from '../assets/bios.json';
 
 @Component({
   selector: 'app-root',
@@ -83,7 +85,7 @@ export class AppComponent {
 
   constructor() {
     let count = 0;
-    while (count < 18) {
+    while (count < 100) {
       const coin = Math.floor(Math.random() * 2);
       this.players.push(this.generatePlayer(coin ? 'pitcher' : 'batter'));
       count++;
@@ -96,7 +98,18 @@ export class AppComponent {
       stats: {},
       offsets: {},
       total: 0,
+      name: '',
+      bio: Bios[Math.floor(Math.random() * Bios.length)],
     };
+    const givenNameCount = Math.floor(Math.random() * 2);
+    player.name +=
+      GivenNames[Math.floor(Math.random() * GivenNames.length)] + ' ';
+    if (givenNameCount) {
+      player.name +=
+        GivenNames[Math.floor(Math.random() * GivenNames.length)] + ' ';
+    }
+    player.name += LastNames[Math.floor(Math.random() * LastNames.length)];
+
     for (const stat of this.stats) {
       if (this.bounds[type][stat]) {
         player.stats[stat] = this.bounds[type][stat].min;
@@ -107,7 +120,7 @@ export class AppComponent {
       const stat = this.stats[Math.floor(Math.random() * this.stats.length)];
       console.log(stat, player.stats[stat]);
       if (player.stats[stat] < this.bounds[type][stat].max) {
-        const remaining = this.bounds[type][stat].max - player.stats[stat];
+        const remaining = this.bounds[type][stat].max + 1 - player.stats[stat];
         const add = Math.floor(
           Math.random() *
             (remaining < 101 - player.total ? remaining : 101 - player.total)

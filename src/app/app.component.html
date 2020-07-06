@@ -5,13 +5,14 @@
   class="content"
   role="main"
   fxLayout="row wrap"
-  gdColumns="repeat(auto-fill, minmax(110px, 1fr))"
+  gdColumns="repeat(auto-fill, minmax(225px, 1fr))"
   gdGap="10px"
   style="padding: 10px;"
 >
   <mat-card *ngFor="let player of players">
     <mat-card-header>
-      <mat-card-title>{{ player.type }}</mat-card-title>
+      <mat-card-title>{{ player.name }}</mat-card-title>
+      <mat-card-subtitle>{{ player.type }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       <div *ngFor="let stat of stats">
@@ -23,6 +24,9 @@
           ></span
         ><span *ngIf="player.stats[stat] === 0">⁠—</span>
       </div>
+    </mat-card-content>
+    <mat-card-content>
+      <mat-card-subtitle>{{ player.bio }}</mat-card-subtitle>
     </mat-card-content>
   </mat-card>
   <!-- Footer -->
