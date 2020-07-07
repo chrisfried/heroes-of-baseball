@@ -99,6 +99,10 @@ export class AppComponent {
   teamRecipe = [
     {
       count: 1,
+      position: ['C'],
+    },
+    {
+      count: 1,
       position: ['1B', 'IF'],
     },
     {
@@ -126,11 +130,11 @@ export class AppComponent {
       position: ['RF', 'OF'],
     },
     {
-      count: 4,
+      count: 5,
       position: ['SP'],
     },
     {
-      count: 6,
+      count: 5,
       position: ['MR'],
     },
     {
@@ -138,7 +142,7 @@ export class AppComponent {
       position: ['MR', 'CL'],
     },
     {
-      count: 5,
+      count: 6,
       position: ['C', '1B', '2B', '3B', 'SS', 'IF', 'LF', 'CF', 'RF', 'OF'],
     },
   ];
