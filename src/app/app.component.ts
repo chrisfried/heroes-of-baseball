@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { GivenNames, LastNames } from '../assets/pre-1930-baseball-names.json';
 import { Bios } from '../assets/bios.json';
+import { Locations, Mascots } from '../assets/team-names.json';
 
 @Component({
   selector: 'app-root',
@@ -80,27 +81,104 @@ export class AppComponent {
       },
     },
   };
+  positions = [
+    'C',
+    '1B',
+    '2B',
+    '3B',
+    'SS',
+    'IF',
+    'LF',
+    'CF',
+    'RF',
+    'OF',
+    'SP',
+    'MR',
+    'CL',
+  ];
+  teamRecipe = [
+    {
+      count: 1,
+      position: ['1B', 'IF'],
+    },
+    {
+      count: 1,
+      position: ['2B', 'IF'],
+    },
+    {
+      count: 1,
+      position: ['3B', 'IF'],
+    },
+    {
+      count: 1,
+      position: ['SS', 'IF'],
+    },
+    {
+      count: 1,
+      position: ['LF', 'OF'],
+    },
+    {
+      count: 1,
+      position: ['CF', 'OF'],
+    },
+    {
+      count: 1,
+      position: ['RF', 'OF'],
+    },
+    {
+      count: 4,
+      position: ['SP'],
+    },
+    {
+      count: 6,
+      position: ['MR'],
+    },
+    {
+      count: 1,
+      position: ['MR', 'CL'],
+    },
+    {
+      count: 5,
+      position: ['C', '1B', '2B', '3B', 'SS', 'IF', 'LF', 'CF', 'RF', 'OF'],
+    },
+  ];
 
   players = [];
 
   constructor() {
-    let count = 0;
-    while (count < 100) {
-      const coin = Math.floor(Math.random() * 2);
-      this.players.push(this.generatePlayer(coin ? 'pitcher' : 'batter'));
-      count++;
+    for (const player of this.teamRecipe) {
+      for (let i = 0; i < player.count; i++) {
+        this.players.push(
+          this.generatePlayer(
+            player.position[Math.floor(Math.random() * player.position.length)]
+          )
+        );
+      }
     }
   }
 
-  generatePlayer(type: 'pitcher' | 'batter') {
+  generatePlayer(position: string) {
+    const type =
+      position === 'SP' || position === 'MR' || position === 'CL'
+        ? 'pitcher'
+        : 'batter';
     const player = {
-      type,
+      position,
       stats: {},
       offsets: {},
       total: 0,
       name: '',
       bio: Bios[Math.floor(Math.random() * Bios.length)],
+      team:
+        Locations[Math.floor(Math.random() * Locations.length)] +
+        ' ' +
+        Mascots[Math.floor(Math.random() * Mascots.length)],
+      speed: Math.floor(Math.random() * 26),
+      speedSign: Math.floor(Math.random() * 2) ? '+' : '-',
+      arm: Math.floor(Math.random() * 43) + 36,
+      innings: 1,
     };
+
     const givenNameCount = Math.floor(Math.random() * 2);
     player.name +=
       GivenNames[Math.floor(Math.random() * GivenNames.length)] + ' ';
@@ -109,6 +187,13 @@ export class AppComponent {
         GivenNames[Math.floor(Math.random() * GivenNames.length)] + ' ';
     }
     player.name += LastNames[Math.floor(Math.random() * LastNames.length)];
+
+    if (position === 'SP') {
+      player.innings = Math.floor(Math.random() * 3) + 5;
+    }
+    if (position === 'MR') {
+      player.innings = Math.floor(Math.random() * 2) + 1;
+    }
 
     for (const stat of this.stats) {
       if (this.bounds[type][stat]) {
