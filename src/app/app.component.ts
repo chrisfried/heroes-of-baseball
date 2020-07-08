@@ -214,20 +214,6 @@ export class AppComponent {
           Math.random() *
             (remaining < 101 - player.total ? remaining : 101 - player.total)
         );
-        console.log(
-          'stat',
-          stat,
-          'min',
-          this.bounds[type][stat].min,
-          'max',
-          this.bounds[type][stat].max,
-          'current',
-          player.stats[stat],
-          'add',
-          add,
-          'total',
-          player.total
-        );
         player.stats[stat] += add;
         player.total += add;
       }
@@ -244,6 +230,12 @@ export class AppComponent {
           min += player.stats[stat] - 1;
         }
         player.offsets[stat].max = min;
+        if (player.offsets[stat].min === 100) {
+          player.offsets[stat].min = '00';
+        }
+        if (player.offsets[stat].max === 100) {
+          player.offsets[stat].max = '00';
+        }
       }
     }
     return player;

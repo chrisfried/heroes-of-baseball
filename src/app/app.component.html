@@ -5,44 +5,54 @@
   class="content"
   role="main"
   fxLayout="row wrap"
-  gdColumns="repeat(auto-fill, minmax(225px, 1fr))"
+  gdColumns="repeat(auto-fill, minmax(250px, 1fr))"
   gdGap="10px"
   style="padding: 10px;"
 >
-  <mat-card *ngFor="let player of players">
-    <mat-card-content>
-      <mat-card-title style="font-size: 18px;">{{
-        player.name
-      }}</mat-card-title>
-      <mat-card-subtitle>{{ player.team }}</mat-card-subtitle>
+  <mat-card class="player" *ngFor="let player of players" fxLayout="column">
+    <div class="name-wrapper" fxLayout="row" fxLayoutGap="1em" fxFlex>
+      <div fxFlex>
+        <mat-card-title class="name" style="font-size: 18px;">{{
+          player.name
+        }}</mat-card-title>
+        <mat-card-subtitle class="team">{{ player.team }}</mat-card-subtitle>
+      </div>
+      <div class="speed-wrapper">
+        <div class="speed">Speed: {{ player.speedSign + player.speed }}</div>
+        <div class="position">
+          {{ player.position
+          }}<span
+            *ngIf="
+              player.position === 'SP' ||
+              player.position === 'MR' ||
+              player.position === 'CL'
+            "
+            >: {{ player.innings }}
+          </span>
+          <span *ngIf="player.position === 'C'">: {{ player.arm }}</span>
+        </div>
+      </div>
+    </div>
+    <mat-card-content class="bio-wrapper">
+      <mat-card-subtitle class="bio">{{ player.bio }}</mat-card-subtitle>
     </mat-card-content>
-    <mat-card-content>
-      <div>Position: {{ player.position }}</div>
-      <div>Speed: {{ player.speedSign }} {{ player.speed }}</div>
+    <mat-card-content fxLayout="row" fxLayoutGap="1px">
       <div
-        *ngIf="
-          player.position === 'SP' ||
-          player.position === 'MR' ||
-          player.position === 'CL'
-        "
+        *ngFor="let stat of stats"
+        fxLayout="column"
+        fxLayoutGap="1px"
+        fxFlex
       >
-        Innings: {{ player.innings }}
+        <div *ngIf="player.stats[stat] > 0" class="roll">
+          {{ player.offsets[stat].min
+          }}<ng-container
+            *ngIf="player.offsets[stat].max !== player.offsets[stat].min"
+            >-{{ player.offsets[stat].max }}</ng-container
+          >
+        </div>
+        <div *ngIf="player.stats[stat] === 0" class="roll">⁠—</div>
+        <div class="stat">{{ stat | statNames }}</div>
       </div>
-      <div *ngIf="player.position === 'C'">Arm: {{ player.arm }}</div>
-    </mat-card-content>
-    <mat-card-content>
-      <div *ngFor="let stat of stats">
-        {{ stat | statNames }}:
-        <span *ngIf="player.stats[stat] > 0"
-          >{{ player.offsets[stat].min
-          }}<span *ngIf="player.offsets[stat].max !== player.offsets[stat].min">
-            - {{ player.offsets[stat].max }}</span
-          ></span
-        ><span *ngIf="player.stats[stat] === 0">⁠—</span>
-      </div>
-    </mat-card-content>
-    <mat-card-content>
-      <mat-card-subtitle>{{ player.bio }}</mat-card-subtitle>
     </mat-card-content>
   </mat-card>
   <!-- Footer -->
