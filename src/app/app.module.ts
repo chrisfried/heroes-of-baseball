@@ -7,9 +7,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { StatNamesPipe } from './stat-names.pipe';
+import { BattingAvgPipe } from './batting-avg.pipe';
 
 @NgModule({
-  declarations: [AppComponent, StatNamesPipe],
+  declarations: [AppComponent, StatNamesPipe, BattingAvgPipe],
   imports: [
     BrowserModule,
     AppRoutingModule,

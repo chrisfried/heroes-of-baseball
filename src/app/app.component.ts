@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { GivenNames, LastNames } from '../assets/pre-1930-baseball-names.json';
 import { Bios } from '../assets/bios.json';
 import { Locations, Mascots } from '../assets/team-names.json';
+import * as ColorScheme from 'color-scheme';
 
 @Component({
   selector: 'app-root',
@@ -148,49 +149,103 @@ export class AppComponent {
   ];
 
   players = [];
+  totalBa: number;
+  avgBa: number;
+  totalBaa: number;
+  avgBaa: number;
+  total: number;
+  avg: number;
+  colors: string[] = [];
+  ratio: number;
 
   constructor() {
+    const scheme = new ColorScheme();
+    const hue = Math.floor(Math.random() * 360);
+    this.colors = [
+      ...this.colors,
+      ...scheme.from_hue(hue).scheme('contrast').variation('default').colors(),
+    ];
+
     for (const player of this.teamRecipe) {
       for (let i = 0; i < player.count; i++) {
+        const team = `${
+          Locations[Math.floor(Math.random() * Locations.length)]
+        } ${Mascots[Math.floor(Math.random() * Mascots.length)]}`;
         this.players.push(
           this.generatePlayer(
-            player.position[Math.floor(Math.random() * player.position.length)]
+            player.position[Math.floor(Math.random() * player.position.length)],
+            team
           )
         );
       }
     }
+    this.totalBa = this.players
+      .map((player) => player.ba)
+      .reduce((accumulator, ba) => (accumulator += ba));
+    this.avgBa = this.players
+      .map((player) => player.ba)
+      .reduce((accumulator, ba) => {
+        if (ba) {
+          return (accumulator + ba) / 2;
+        } else {
+          return accumulator;
+        }
+      });
+    this.totalBaa = this.players
+      .map((player) => player.baa)
+      .reduce((accumulator, baa) => (accumulator += baa));
+    this.avgBaa = this.players
+      .map((player) => player.baa)
+      .reduce((accumulator, baa) => {
+        if (baa) {
+          return (accumulator + baa) / 2;
+        } else {
+          return accumulator;
+        }
+      });
+    this.total = this.totalBa + this.totalBaa;
+    this.avg = (this.avgBa + this.avgBaa) / 2;
+    const getGcd = (a: number, b: number) => (b ? getGcd(b, a % b) : a);
+    const gcd = getGcd(
+      Math.round(this.avgBa * 100),
+      Math.round(this.avgBaa * 100)
+    );
+    this.ratio = this.avgBa / this.avgBaa;
+    console.log(this.ratio);
   }
 
-  generatePlayer(position: string) {
-    const type =
-      position === 'SP' || position === 'MR' || position === 'CL'
-        ? 'pitcher'
-        : 'batter';
+  generatePlayer(position: string, team: string) {
     const player = {
+      type:
+        position === 'SP' || position === 'MR' || position === 'CL'
+          ? 'pitcher'
+          : 'batter',
       position,
-      stats: {},
+      stats: {
+        k: 0,
+        bb: 0,
+        go: 0,
+        fb: 0,
+        sb: 0,
+        fo: 0,
+        hr: 0,
+        tb: 0,
+      },
       offsets: {},
       total: 0,
-      name: '',
+      name: `${GivenNames[Math.floor(Math.random() * GivenNames.length)]} ${
+        LastNames[Math.floor(Math.random() * LastNames.length)]
+      }`,
       bio: Bios[Math.floor(Math.random() * Bios.length)],
-      team:
-        Locations[Math.floor(Math.random() * Locations.length)] +
-        ' ' +
-        Mascots[Math.floor(Math.random() * Mascots.length)],
+      team,
       speed: Math.floor(Math.random() * 26),
       speedSign: Math.floor(Math.random() * 2) ? '+' : '-',
       arm: Math.floor(Math.random() * 43) + 36,
       innings: 1,
+      ba: 0,
+      baa: 0,
+      erc: 0,
     };
-
-    const givenNameCount = Math.floor(Math.random() * 2);
-    player.name +=
-      GivenNames[Math.floor(Math.random() * GivenNames.length)] + ' ';
-    if (givenNameCount) {
-      player.name +=
-        GivenNames[Math.floor(Math.random() * GivenNames.length)] + ' ';
-    }
-    player.name += LastNames[Math.floor(Math.random() * LastNames.length)];
 
     if (position === 'SP') {
       player.innings = Math.floor(Math.random() * 3) + 5;
@@ -200,16 +255,16 @@ export class AppComponent {
     }
 
     for (const stat of this.stats) {
-      if (this.bounds[type][stat]) {
-        player.stats[stat] = this.bounds[type][stat].min;
+      if (this.bounds[player.type][stat]) {
+        player.stats[stat] = this.bounds[player.type][stat].min;
         player.total += player.stats[stat];
       }
     }
     while (player.total < 100) {
       const stat = this.stats[Math.floor(Math.random() * this.stats.length)];
-      console.log(stat, player.stats[stat]);
-      if (player.stats[stat] < this.bounds[type][stat].max) {
-        const remaining = this.bounds[type][stat].max + 1 - player.stats[stat];
+      if (player.stats[stat] < this.bounds[player.type][stat].max) {
+        const remaining =
+          this.bounds[player.type][stat].max + 1 - player.stats[stat];
         const add = Math.floor(
           Math.random() *
             (remaining < 101 - player.total ? remaining : 101 - player.total)
@@ -217,6 +272,49 @@ export class AppComponent {
         player.stats[stat] += add;
         player.total += add;
       }
+    }
+    if (player.type === 'batter') {
+      player.ba =
+        (player.stats.fb +
+          player.stats.sb +
+          player.stats.hr +
+          player.stats.tb) /
+        (100 - player.stats.bb);
+    } else {
+      const ptb =
+        0.89 *
+          (1.255 * (player.stats.fb + player.stats.sb + player.stats.tb) +
+            4 * player.stats.hr) +
+        0.475 * player.stats.bb;
+      const ip = (player.stats.fo + player.stats.go + player.stats.k) / 3;
+      player.erc =
+        9 *
+          (((player.stats.fb +
+            player.stats.sb +
+            player.stats.tb +
+            player.stats.hr +
+            player.stats.bb) *
+            ptb) /
+            (100 * ip)) -
+        0.56;
+      if (player.erc < 2.24) {
+        player.erc =
+          9 *
+          (((player.stats.fb +
+            player.stats.sb +
+            player.stats.tb +
+            player.stats.hr +
+            player.stats.bb) *
+            ptb) /
+            (100 * ip)) *
+          0.75;
+      }
+      player.baa =
+        (player.stats.fb +
+          player.stats.sb +
+          player.stats.tb +
+          player.stats.hr) /
+        (100 - player.stats.bb);
     }
     let min = 0;
     for (const stat in player.stats) {

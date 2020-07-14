@@ -6,54 +6,94 @@
   role="main"
   fxLayout="row wrap"
   gdColumns="repeat(auto-fill, minmax(250px, 1fr))"
-  gdGap="10px"
-  style="padding: 10px;"
+  gdGap="1em"
 >
-  <mat-card class="player" *ngFor="let player of players" fxLayout="column">
-    <div class="name-wrapper" fxLayout="row" fxLayoutGap="1em" fxFlex>
-      <div fxFlex>
-        <mat-card-title class="name" style="font-size: 18px;">{{
-          player.name
-        }}</mat-card-title>
-        <mat-card-subtitle class="team">{{ player.team }}</mat-card-subtitle>
-      </div>
-      <div class="speed-wrapper">
-        <div class="speed">Speed: {{ player.speedSign + player.speed }}</div>
-        <div class="position">
-          {{ player.position
-          }}<span
-            *ngIf="
-              player.position === 'SP' ||
-              player.position === 'MR' ||
-              player.position === 'CL'
-            "
-            >: {{ player.innings }}
-          </span>
-          <span *ngIf="player.position === 'C'">: {{ player.arm }}</span>
+  <!-- <div
+    *ngFor="let color of colors"
+    [style.background-color]="'#' + color"
+    style="height: 30px;"
+  ></div> -->
+  <mat-card>
+    <div>Team BA {{ avgBa | battingAvg }}</div>
+    <div>Team BAA {{ avgBaa | battingAvg }}</div>
+    <div>BA:BAA {{ ratio | number: "1.1-1" }}</div>
+  </mat-card>
+  <mat-card class="player" *ngFor="let player of players">
+    <div class="aspect-ratio">
+      <div class="aspect-ratio-inner" fxLayout="column" fxLayoutGap=".75em">
+        <div
+          class="name-wrapper"
+          [style.background-color]="
+            '#' + colors[player.type === 'batter' ? 2 : 1]
+          "
+          [style.color]="'#' + colors[player.type === 'batter' ? 1 : 2]"
+          fxLayout="column"
+          fxLayoutGap="1em"
+          fxFlex
+        >
+          <div fxFlex fxLayout="row" fxLayoutGap="1em">
+            <div class="team" fxFlex>{{ player.team }}</div>
+            <div class="top-stat-wrapper">
+              <div>
+                <span class="stat">Speed </span>
+                <span class="value">
+                  {{ player.speedSign + player.speed }}
+                </span>
+              </div>
+              <div>
+                <span class="stat">
+                  {{ player.position }}
+                </span>
+                <span class="value">
+                  <span
+                    *ngIf="
+                      player.position === 'SP' ||
+                      player.position === 'MR' ||
+                      player.position === 'CL'
+                    "
+                  >
+                    {{ player.innings }}
+                  </span>
+                  <span *ngIf="player.position === 'C'"> {{ player.arm }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="name">
+            {{ player.name }}
+          </div>
+        </div>
+        <div
+          class="bio-wrapper"
+          [style.background-color]="'#' + colors[5]"
+          [style.color]="'#' + colors[6]"
+        >
+          <div class="bio">{{ player.bio }}</div>
+        </div>
+        <div class="rolls" fxLayout="row" fxLayoutGap="1px">
+          <div
+            *ngFor="let stat of stats"
+            fxLayout="column"
+            fxLayoutGap="1px"
+            fxFlex
+          >
+            <div *ngIf="player.stats[stat] > 0" class="roll">
+              {{ player.offsets[stat].min
+              }}<ng-container
+                *ngIf="player.offsets[stat].max !== player.offsets[stat].min"
+                >-{{ player.offsets[stat].max }}</ng-container
+              >
+            </div>
+            <div *ngIf="player.stats[stat] === 0" class="roll">
+              ⁠—
+            </div>
+            <div class="stat">
+              {{ stat | statNames }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <mat-card-content class="bio-wrapper">
-      <mat-card-subtitle class="bio">{{ player.bio }}</mat-card-subtitle>
-    </mat-card-content>
-    <mat-card-content fxLayout="row" fxLayoutGap="1px">
-      <div
-        *ngFor="let stat of stats"
-        fxLayout="column"
-        fxLayoutGap="1px"
-        fxFlex
-      >
-        <div *ngIf="player.stats[stat] > 0" class="roll">
-          {{ player.offsets[stat].min
-          }}<ng-container
-            *ngIf="player.offsets[stat].max !== player.offsets[stat].min"
-            >-{{ player.offsets[stat].max }}</ng-container
-          >
-        </div>
-        <div *ngIf="player.stats[stat] === 0" class="roll">⁠—</div>
-        <div class="stat">{{ stat | statNames }}</div>
-      </div>
-    </mat-card-content>
   </mat-card>
   <!-- Footer -->
   <footer></footer>
